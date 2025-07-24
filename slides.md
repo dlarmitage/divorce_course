@@ -16,22 +16,54 @@ mdc: true
 layout: default
 ---
 
+<script setup>
+// Check if we're in embed mode
+const isEmbedMode = window.location.search.includes('embed=true');
+
+// Disable navigation in embed mode
+if (isEmbedMode) {
+  // Set data attribute for CSS targeting
+  document.documentElement.setAttribute('data-embed', 'true');
+  
+  // Override navigation methods
+  const originalNext = $slidev.nav.next;
+  const originalPrev = $slidev.nav.prev;
+  
+  $slidev.nav.next = () => {
+    // Do nothing - prevent navigation
+    console.log('Navigation disabled in embed mode');
+  };
+  
+  $slidev.nav.prev = () => {
+    // Do nothing - prevent navigation
+    console.log('Navigation disabled in embed mode');
+  };
+  
+  // Hide navigation elements
+  document.addEventListener('DOMContentLoaded', () => {
+    const navElements = document.querySelectorAll('.slidev-nav, .slidev-nav-button, [data-slidev-nav], .abs-br, .slidev-icon-btn');
+    navElements.forEach(el => {
+      if (el) el.style.display = 'none';
+    });
+    
+    // Also hide clickable navigation elements
+    const clickableNavs = document.querySelectorAll('div[onclick*="nav"], button[onclick*="nav"]');
+    clickableNavs.forEach(el => {
+      if (el) {
+        el.style.display = 'none';
+        el.style.pointerEvents = 'none';
+      }
+    });
+  });
+}
+</script>
+
 <style>
 @import './style.css';
 </style>
 
 # Vision
 ## Creating Direction for Your Family
-
-<div @click="$slidev.nav.next" class="mt-12 py-1" hover:bg="white op-10">
-  Press Space for next page <carbon:arrow-right />
-</div>
-
-<div class="abs-br m-6 text-xl">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="slidev-icon-btn">
-    <carbon:edit />
-  </button>
-</div>
 
 <!--
 The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)

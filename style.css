@@ -85,4 +85,20 @@ h2 {
 
 .bg-brand-accent {
   background-color: #FF6B35;
+}
+
+/* Hide navigation elements in embed mode */
+.slidev-layout[data-embed="true"] .slidev-nav,
+.slidev-layout[data-embed="true"] .slidev-nav-button,
+.slidev-layout[data-embed="true"] [data-slidev-nav],
+.slidev-layout[data-embed="true"] .abs-br,
+.slidev-layout[data-embed="true"] .slidev-icon-btn {
+  display: none !important;
+}
+
+/* Hide clickable navigation elements */
+.slidev-layout[data-embed="true"] div[onclick*="nav"],
+.slidev-layout[data-embed="true"] button[onclick*="nav"] {
+  display: none !important;
+  pointer-events: none !important;
 } 

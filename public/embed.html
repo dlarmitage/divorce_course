@@ -24,11 +24,20 @@
 
     // Detect base path (works both in dev and prod)
     const isDev = location.hostname === "localhost";
-    const base = isDev ? "http://localhost:3030" : location.origin;
+    const base = isDev ? "http://localhost:3031" : location.origin;
 
-    // Construct full deck URL with slide number
-    const target = `${base}/#${slide}`;
+    // Construct full deck URL with slide number and embed parameter
+    const target = `${base}/#${slide}?embed=true`;
     document.getElementById("slideFrame").src = target;
+
+    // Listen for messages from the iframe to handle navigation prevention
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'slidev-navigation') {
+        // Prevent navigation by not allowing slide changes
+        event.preventDefault();
+        return false;
+      }
+    });
   </script>
 </body>
 </html>
