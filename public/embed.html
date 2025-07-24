@@ -20,23 +20,48 @@
 <body>
   <iframe id="slideFrame" allowfullscreen></iframe>
   <script>
+    console.log('=== EMBED.HTML DEBUGGING ===');
+    console.log('Current URL:', window.location.href);
+    console.log('Search params:', window.location.search);
+    
     const slide = new URLSearchParams(location.search).get("slide") || "1";
+    console.log('Slide parameter extracted:', slide);
+    console.log('Slide parameter type:', typeof slide);
 
     // Detect base path (works both in dev and prod)
     const isDev = location.hostname === "localhost";
     const base = isDev ? "http://localhost:3030" : location.origin;
+    console.log('Base URL:', base);
+    console.log('Is dev mode:', isDev);
 
     // Construct full deck URL with embed parameter first, then slide number
     const target = `${base}/?embed=true#${slide}`;
-    document.getElementById("slideFrame").src = target;
+    console.log('Target URL for iframe:', target);
+    
+    const iframe = document.getElementById("slideFrame");
+    console.log('Iframe element:', iframe);
+    
+    iframe.src = target;
+    console.log('Iframe src set to:', iframe.src);
 
     // Listen for messages from the iframe to handle navigation prevention
     window.addEventListener('message', function(event) {
+      console.log('Message received from iframe:', event.data);
       if (event.data && event.data.type === 'slidev-navigation') {
         // Prevent navigation by not allowing slide changes
         event.preventDefault();
         return false;
       }
+    });
+    
+    // Listen for iframe load events
+    iframe.addEventListener('load', function() {
+      console.log('Iframe loaded successfully');
+      console.log('Final iframe src:', iframe.src);
+    });
+    
+    iframe.addEventListener('error', function(error) {
+      console.error('Iframe load error:', error);
     });
   </script>
 </body>

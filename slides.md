@@ -17,25 +17,42 @@ layout: default
 ---
 
 <script setup>
+console.log('=== SLIDES.MD DEBUGGING ===');
+console.log('Current URL:', window.location.href);
+console.log('Search params:', window.location.search);
+console.log('Hash:', window.location.hash);
+
 // Check if we're in embed mode
 const isEmbedMode = window.location.search.includes('embed=true');
+console.log('Is embed mode detected:', isEmbedMode);
 
 // Disable navigation in embed mode
 if (isEmbedMode) {
+  console.log('=== EMBED MODE ACTIVATED ===');
+  
   // Set data attribute for CSS targeting
   document.documentElement.setAttribute('data-embed', 'true');
+  console.log('Data-embed attribute set to true');
   
   // Wait for Slidev to be ready before overriding navigation
   const waitForSlidev = () => {
+    console.log('Checking if Slidev is ready...');
+    console.log('$slidev exists:', typeof $slidev !== 'undefined');
+    if (typeof $slidev !== 'undefined') {
+      console.log('$slidev.nav exists:', !!$slidev.nav);
+    }
+    
     if (typeof $slidev !== 'undefined' && $slidev.nav) {
+      console.log('Slidev is ready, overriding navigation...');
+      
       // Override navigation methods
       $slidev.nav.next = () => {
-        console.log('Navigation disabled in embed mode');
+        console.log('Navigation disabled in embed mode - next() called');
         return false;
       };
       
       $slidev.nav.prev = () => {
-        console.log('Navigation disabled in embed mode');
+        console.log('Navigation disabled in embed mode - prev() called');
         return false;
       };
       
@@ -43,6 +60,7 @@ if (isEmbedMode) {
       const originalKeydown = document.onkeydown;
       document.onkeydown = (e) => {
         if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'Enter') {
+          console.log('Keyboard navigation blocked:', e.key);
           e.preventDefault();
           e.stopPropagation();
           return false;
@@ -50,8 +68,9 @@ if (isEmbedMode) {
         if (originalKeydown) return originalKeydown(e);
       };
       
-      console.log('Embed mode: Navigation disabled');
+      console.log('Embed mode: Navigation disabled successfully');
     } else {
+      console.log('Slidev not ready yet, retrying in 100ms...');
       // Try again in a moment
       setTimeout(waitForSlidev, 100);
     }
@@ -62,9 +81,12 @@ if (isEmbedMode) {
   
   // Hide navigation elements
   const hideNavElements = () => {
-    const navElements = document.querySelectorAll('.slidev-nav, .slidev-nav-button, [data-slidev-nav], .abs-br, .slidev-icon-btn, .slidev-nav-bar');
-    navElements.forEach(el => {
+    console.log('Hiding navigation elements...');
+    const navElements = document.querySelectorAll('.slidev-nav, .slidev-nav-button, [data-slidev-nav], .abs-br, .slidev-icon-btn, .slidev-nav-bar, .slidev-controls');
+    console.log('Found nav elements:', navElements.length);
+    navElements.forEach((el, index) => {
       if (el) {
+        console.log(`Hiding nav element ${index}:`, el.className);
         el.style.display = 'none';
         el.style.visibility = 'hidden';
       }
@@ -72,8 +94,10 @@ if (isEmbedMode) {
     
     // Also hide clickable navigation elements
     const clickableNavs = document.querySelectorAll('div[onclick*="nav"], button[onclick*="nav"], [data-slidev-click]');
-    clickableNavs.forEach(el => {
+    console.log('Found clickable nav elements:', clickableNavs.length);
+    clickableNavs.forEach((el, index) => {
       if (el) {
+        console.log(`Hiding clickable nav element ${index}:`, el.className);
         el.style.display = 'none';
         el.style.pointerEvents = 'none';
       }
@@ -82,10 +106,18 @@ if (isEmbedMode) {
   
   // Hide elements immediately and also after DOM is ready
   hideNavElements();
-  document.addEventListener('DOMContentLoaded', hideNavElements);
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, hiding nav elements again...');
+    hideNavElements();
+  });
   
   // Also hide elements periodically to catch any that load later
-  setInterval(hideNavElements, 1000);
+  setInterval(() => {
+    console.log('Periodic nav element cleanup...');
+    hideNavElements();
+  }, 1000);
+} else {
+  console.log('Not in embed mode, navigation will work normally');
 }
 </script>
 
