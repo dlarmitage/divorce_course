@@ -1,0 +1,88 @@
+/* Custom styles for Care for the Kids divorce course */
+
+/* Ensure white background on all slides */
+.slidev-layout {
+  background: white !important;
+  text-align: center !important;
+  padding: 2rem !important;
+  padding-bottom: 100px !important;
+}
+
+/* Adjust slide content to account for footer */
+.slidev-layout.default {
+  padding-bottom: 80px;
+}
+
+/* Style headings to match brand colors */
+h1 {
+  color: #146b8c;
+  font-weight: 600;
+  text-align: center !important;
+  margin-bottom: 1rem !important;
+}
+
+h2 {
+  color: #4EC5D4;
+  font-weight: 500;
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Center all text content */
+.slidev-layout p,
+.slidev-layout ul,
+.slidev-layout ol,
+.slidev-layout li {
+  text-align: center !important;
+}
+
+/* Center blockquotes and special text */
+.slidev-layout blockquote {
+  text-align: center !important;
+  margin: 2rem auto !important;
+  max-width: 80% !important;
+}
+
+/* Center lists properly */
+.slidev-layout ul,
+.slidev-layout ol {
+  display: inline-block !important;
+  text-align: left !important;
+  margin: 1rem auto !important;
+}
+
+.slidev-layout li {
+  text-align: left !important;
+  margin: 0.5rem 0 !important;
+}
+
+/* Use padding to push content to center */
+.slidev-layout {
+  padding-top: 20vh !important;
+  padding-bottom: 20vh !important;
+}
+
+/* Brand color classes for easy use */
+.text-brand-primary {
+  color: #146b8c;
+}
+
+.text-brand-secondary {
+  color: #4EC5D4;
+}
+
+.text-brand-accent {
+  color: #FF6B35;
+}
+
+.bg-brand-primary {
+  background-color: #146b8c;
+}
+
+.bg-brand-secondary {
+  background-color: #4EC5D4;
+}
+
+.bg-brand-accent {
+  background-color: #FF6B35;
+} 
