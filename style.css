@@ -88,21 +88,21 @@ h2 {
 }
 
 /* Hide navigation elements in embed mode */
-.slidev-layout[data-embed="true"] .slidev-nav,
-.slidev-layout[data-embed="true"] .slidev-nav-button,
-.slidev-layout[data-embed="true"] [data-slidev-nav],
-.slidev-layout[data-embed="true"] .abs-br,
-.slidev-layout[data-embed="true"] .slidev-icon-btn,
-.slidev-layout[data-embed="true"] .slidev-nav-bar,
-.slidev-layout[data-embed="true"] .slidev-controls {
+html[data-embed="true"] .slidev-nav,
+html[data-embed="true"] .slidev-nav-button,
+html[data-embed="true"] [data-slidev-nav],
+html[data-embed="true"] .abs-br,
+html[data-embed="true"] .slidev-icon-btn,
+html[data-embed="true"] .slidev-nav-bar,
+html[data-embed="true"] .slidev-controls {
   display: none !important;
   visibility: hidden !important;
 }
 
 /* Hide clickable navigation elements */
-.slidev-layout[data-embed="true"] div[onclick*="nav"],
-.slidev-layout[data-embed="true"] button[onclick*="nav"],
-.slidev-layout[data-embed="true"] [data-slidev-click] {
+html[data-embed="true"] div[onclick*="nav"],
+html[data-embed="true"] button[onclick*="nav"],
+html[data-embed="true"] [data-slidev-click] {
   display: none !important;
   pointer-events: none !important;
 }
@@ -116,4 +116,26 @@ html[data-embed="true"] * {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+/* Additional navigation prevention */
+html[data-embed="true"] .slidev-nav,
+html[data-embed="true"] .slidev-nav-button,
+html[data-embed="true"] .slidev-icon-btn,
+html[data-embed="true"] .slidev-controls,
+html[data-embed="true"] .slidev-nav-bar,
+html[data-embed="true"] .abs-br,
+html[data-embed="true"] .abs-bl,
+html[data-embed="true"] .abs-tr,
+html[data-embed="true"] .abs-tl {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Prevent any click events on navigation areas */
+html[data-embed="true"] [data-slidev-click],
+html[data-embed="true"] [onclick*="nav"],
+html[data-embed="true"] [onclick*="slide"] {
+  pointer-events: none !important;
+  cursor: default !important;
 } 

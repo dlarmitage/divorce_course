@@ -34,7 +34,7 @@
     console.log('Base URL:', base);
     console.log('Is dev mode:', isDev);
 
-    // Construct full deck URL with embed parameter first, then slide number
+    // Construct full deck URL - try different approach
     const target = `${base}/?embed=true#${slide}`;
     console.log('Target URL for iframe:', target);
     
@@ -51,6 +51,33 @@
         // Prevent navigation by not allowing slide changes
         event.preventDefault();
         return false;
+      }
+    });
+    
+    // Prevent iframe from navigating away
+    iframe.addEventListener('load', function() {
+      // Try to inject additional navigation prevention into the iframe
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        if (iframeDoc) {
+          // Add a script to prevent navigation
+          const script = iframeDoc.createElement('script');
+          script.textContent = `
+            // Additional navigation prevention
+            if (window.$slidev && window.$slidev.nav) {
+              const originalNext = window.$slidev.nav.next;
+              const originalPrev = window.$slidev.nav.prev;
+              const originalGo = window.$slidev.nav.go;
+              
+              window.$slidev.nav.next = () => { console.log('Navigation blocked by iframe script'); return false; };
+              window.$slidev.nav.prev = () => { console.log('Navigation blocked by iframe script'); return false; };
+              window.$slidev.nav.go = () => { console.log('Navigation blocked by iframe script'); return false; };
+            }
+          `;
+          iframeDoc.head.appendChild(script);
+        }
+      } catch (e) {
+        console.log('Could not inject script into iframe (CORS restriction):', e.message);
       }
     });
     

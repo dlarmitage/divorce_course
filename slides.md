@@ -26,6 +26,20 @@ console.log('Hash:', window.location.hash);
 const isEmbedMode = window.location.search.includes('embed=true');
 console.log('Is embed mode detected:', isEmbedMode);
 
+// Extract slide number from hash
+const hashMatch = window.location.hash.match(/#(\d+)/);
+const slideNumber = hashMatch ? hashMatch[1] : null;
+console.log('Extracted slide number from hash:', slideNumber);
+
+// Also try to extract from URL path as fallback
+const pathMatch = window.location.pathname.match(/\/(\d+)/);
+const pathSlideNumber = pathMatch ? pathMatch[1] : null;
+console.log('Extracted slide number from path:', pathSlideNumber);
+
+// Use hash first, then path as fallback
+const finalSlideNumber = slideNumber || pathSlideNumber;
+console.log('Final slide number to use:', finalSlideNumber);
+
 // Disable navigation in embed mode
 if (isEmbedMode) {
   console.log('=== EMBED MODE ACTIVATED ===');
@@ -45,6 +59,12 @@ if (isEmbedMode) {
     if (typeof $slidev !== 'undefined' && $slidev.nav) {
       console.log('Slidev is ready, overriding navigation...');
       
+      // Store original navigation methods
+      const originalNext = $slidev.nav.next;
+      const originalPrev = $slidev.nav.prev;
+      const originalGo = $slidev.nav.go;
+      const originalOpenInEditor = $slidev.nav.openInEditor;
+      
       // Override navigation methods
       $slidev.nav.next = () => {
         console.log('Navigation disabled in embed mode - next() called');
@@ -56,10 +76,44 @@ if (isEmbedMode) {
         return false;
       };
       
+      // Override slide navigation but allow initial slide setting
+      $slidev.nav.go = (slide) => {
+        console.log('Navigation disabled in embed mode - go() called with slide:', slide);
+        return false;
+      };
+      
+      // Override any other navigation methods
+      $slidev.nav.openInEditor = () => {
+        console.log('Navigation disabled in embed mode - openInEditor() called');
+        return false;
+      };
+      
+      // Set initial slide if specified
+      if (finalSlideNumber) {
+        console.log('Setting initial slide to:', finalSlideNumber);
+        setTimeout(() => {
+          originalGo(parseInt(finalSlideNumber));
+          console.log('Initial slide set to:', finalSlideNumber);
+        }, 100);
+      } else {
+        // Fallback: check URL again after a delay
+        setTimeout(() => {
+          const delayedHashMatch = window.location.hash.match(/#(\d+)/);
+          const delayedPathMatch = window.location.pathname.match(/\/(\d+)/);
+          const delayedSlideNumber = delayedHashMatch ? delayedHashMatch[1] : (delayedPathMatch ? delayedPathMatch[1] : null);
+          
+          if (delayedSlideNumber) {
+            console.log('Setting delayed initial slide to:', delayedSlideNumber);
+            originalGo(parseInt(delayedSlideNumber));
+            console.log('Delayed initial slide set to:', delayedSlideNumber);
+          }
+        }, 500);
+      }
+      
       // Also override keyboard navigation
       const originalKeydown = document.onkeydown;
       document.onkeydown = (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'Enter') {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'Enter' || e.key === 'PageUp' || e.key === 'PageDown') {
           console.log('Keyboard navigation blocked:', e.key);
           e.preventDefault();
           e.stopPropagation();
@@ -67,6 +121,30 @@ if (isEmbedMode) {
         }
         if (originalKeydown) return originalKeydown(e);
       };
+      
+      // Prevent touch/swipe navigation
+      let touchStartX = 0;
+      let touchStartY = 0;
+      
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: false });
+      
+      document.addEventListener('touchmove', (e) => {
+        const touchEndX = e.touches[0].clientX;
+        const touchEndY = e.touches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        
+        // If it's a horizontal swipe, prevent it
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+          console.log('Touch navigation blocked - horizontal swipe detected');
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
       
       console.log('Embed mode: Navigation disabled successfully');
     } else {
@@ -78,6 +156,28 @@ if (isEmbedMode) {
   
   // Start waiting for Slidev
   waitForSlidev();
+  
+  // Prevent URL hash changes in embed mode
+  const originalPushState = history.pushState;
+  const originalReplaceState = history.replaceState;
+  
+  history.pushState = function(...args) {
+    console.log('Navigation blocked in embed mode - pushState called');
+    return false;
+  };
+  
+  history.replaceState = function(...args) {
+    console.log('Navigation blocked in embed mode - replaceState called');
+    return false;
+  };
+  
+  // Prevent hash changes
+  window.addEventListener('hashchange', (e) => {
+    console.log('Navigation blocked in embed mode - hashchange detected');
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  });
   
   // Hide navigation elements
   const hideNavElements = () => {
@@ -116,6 +216,26 @@ if (isEmbedMode) {
     console.log('Periodic nav element cleanup...');
     hideNavElements();
   }, 1000);
+  
+  // Prevent any click events that might trigger navigation
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target && (
+      target.closest('.slidev-nav') ||
+      target.closest('.slidev-nav-button') ||
+      target.closest('.slidev-icon-btn') ||
+      target.closest('.slidev-controls') ||
+      target.closest('.slidev-nav-bar') ||
+      target.closest('[data-slidev-click]') ||
+      target.closest('[onclick*="nav"]') ||
+      target.closest('[onclick*="slide"]')
+    )) {
+      console.log('Navigation click blocked in embed mode');
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  }, true);
 } else {
   console.log('Not in embed mode, navigation will work normally');
 }
