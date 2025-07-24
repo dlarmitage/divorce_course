@@ -25,36 +25,67 @@ if (isEmbedMode) {
   // Set data attribute for CSS targeting
   document.documentElement.setAttribute('data-embed', 'true');
   
-  // Override navigation methods
-  const originalNext = $slidev.nav.next;
-  const originalPrev = $slidev.nav.prev;
-  
-  $slidev.nav.next = () => {
-    // Do nothing - prevent navigation
-    console.log('Navigation disabled in embed mode');
+  // Wait for Slidev to be ready before overriding navigation
+  const waitForSlidev = () => {
+    if (typeof $slidev !== 'undefined' && $slidev.nav) {
+      // Override navigation methods
+      $slidev.nav.next = () => {
+        console.log('Navigation disabled in embed mode');
+        return false;
+      };
+      
+      $slidev.nav.prev = () => {
+        console.log('Navigation disabled in embed mode');
+        return false;
+      };
+      
+      // Also override keyboard navigation
+      const originalKeydown = document.onkeydown;
+      document.onkeydown = (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        if (originalKeydown) return originalKeydown(e);
+      };
+      
+      console.log('Embed mode: Navigation disabled');
+    } else {
+      // Try again in a moment
+      setTimeout(waitForSlidev, 100);
+    }
   };
   
-  $slidev.nav.prev = () => {
-    // Do nothing - prevent navigation
-    console.log('Navigation disabled in embed mode');
-  };
+  // Start waiting for Slidev
+  waitForSlidev();
   
   // Hide navigation elements
-  document.addEventListener('DOMContentLoaded', () => {
-    const navElements = document.querySelectorAll('.slidev-nav, .slidev-nav-button, [data-slidev-nav], .abs-br, .slidev-icon-btn');
+  const hideNavElements = () => {
+    const navElements = document.querySelectorAll('.slidev-nav, .slidev-nav-button, [data-slidev-nav], .abs-br, .slidev-icon-btn, .slidev-nav-bar');
     navElements.forEach(el => {
-      if (el) el.style.display = 'none';
+      if (el) {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+      }
     });
     
     // Also hide clickable navigation elements
-    const clickableNavs = document.querySelectorAll('div[onclick*="nav"], button[onclick*="nav"]');
+    const clickableNavs = document.querySelectorAll('div[onclick*="nav"], button[onclick*="nav"], [data-slidev-click]');
     clickableNavs.forEach(el => {
       if (el) {
         el.style.display = 'none';
         el.style.pointerEvents = 'none';
       }
     });
-  });
+  };
+  
+  // Hide elements immediately and also after DOM is ready
+  hideNavElements();
+  document.addEventListener('DOMContentLoaded', hideNavElements);
+  
+  // Also hide elements periodically to catch any that load later
+  setInterval(hideNavElements, 1000);
 }
 </script>
 

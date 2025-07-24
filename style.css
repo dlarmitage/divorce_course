@@ -92,13 +92,28 @@ h2 {
 .slidev-layout[data-embed="true"] .slidev-nav-button,
 .slidev-layout[data-embed="true"] [data-slidev-nav],
 .slidev-layout[data-embed="true"] .abs-br,
-.slidev-layout[data-embed="true"] .slidev-icon-btn {
+.slidev-layout[data-embed="true"] .slidev-icon-btn,
+.slidev-layout[data-embed="true"] .slidev-nav-bar,
+.slidev-layout[data-embed="true"] .slidev-controls {
   display: none !important;
+  visibility: hidden !important;
 }
 
 /* Hide clickable navigation elements */
 .slidev-layout[data-embed="true"] div[onclick*="nav"],
-.slidev-layout[data-embed="true"] button[onclick*="nav"] {
+.slidev-layout[data-embed="true"] button[onclick*="nav"],
+.slidev-layout[data-embed="true"] [data-slidev-click] {
   display: none !important;
   pointer-events: none !important;
+}
+
+/* Disable keyboard navigation in embed mode */
+html[data-embed="true"] {
+  user-select: none;
+}
+
+html[data-embed="true"] * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 } 
