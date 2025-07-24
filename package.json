@@ -1,11 +1,16 @@
 {
-  "name": "divorce-course-slides",
-  "version": "1.0.0",
-  "description": "Divorce course presentation slides",
+  "name": "divorce_course",
+  "type": "module",
+  "private": true,
   "scripts": {
-    "build": "cd divorce_course && npm run build",
-    "dev": "cd divorce_course && npm run dev",
-    "install": "cd divorce_course && npm install"
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export"
   },
-  "private": true
-} 
+  "dependencies": {
+    "@slidev/cli": "^52.0.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.17"
+  }
+}

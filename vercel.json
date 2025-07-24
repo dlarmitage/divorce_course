@@ -1,8 +1,7 @@
 {
-  "buildCommand": "cd divorce_course && npm run build",
-  "outputDirectory": "divorce_course/dist",
-  "installCommand": "cd divorce_course && npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
-} 
+}
